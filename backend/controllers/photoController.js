@@ -6,7 +6,8 @@ const photoController = {
   createPhoto: async (req, res) => {
     try {
       const { collectionId, photoUrl } = req.body;
-      const newPhoto = await Photo.create(collectionId, photoUrl);
+      const created_at = new Date(); 
+      const newPhoto = await Photo.create(collectionId, photoUrl, created_at); 
       res.status(201).json({ message: 'Photo is successfully uploaded', photo: newPhoto });
     } catch (error) {
       res.status(500).json({ error: 'Unable to create photo.' });
