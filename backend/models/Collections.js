@@ -4,17 +4,21 @@ const db = require('../config/database'); // Import the database connection
 
 
 const Collection = {
-    create: (name, email) => {
-      return new Promise((resolve, reject) => {
-        db.query('INSERT INTO collections (name, owner_email) VALUES (?, ?)', [name, email], (err, result) => {
+  create: (name, email) => {
+    return new Promise((resolve, reject) => {
+      db.query(
+        'INSERT INTO collections (name, owner_email) VALUES (?, ?)',
+        [name, email],
+        (err, result) => {
           if (err) {
             reject(err);
           } else {
             resolve(result);
           }
-        });
-      });
-    },
+        }
+      );
+    });
+  },
 
   getAll: () => {
     return new Promise((resolve, reject) => {

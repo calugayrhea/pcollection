@@ -9,18 +9,19 @@ const collectionController = {
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
-
+  
       const { name, email } = req.body;
       if (!name || !email) {
         return res.status(400).json({ error: 'Both name and email are required.' });
       }
-
+  
       if (!validator.isEmail(email)) {
         return res.status(400).json({ error: 'Invalid email address.' });
       }
-
+  
+      // Include the created_at field when inserting
       const newCollection = await Collection.create(name, email);
-
+  
       res.status(201).json({ message: 'Collection is successfully created.', collection: newCollection });
     } catch (error) {
       console.error(error);

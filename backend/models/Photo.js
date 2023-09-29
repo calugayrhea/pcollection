@@ -1,12 +1,12 @@
 // models/Photo.js
 
-const db = require('../config/database'); // Import the database connection
+const db = require('../config/database');
 
 const Photo = {
-  // Create a new photo in a collection
   create: (collectionId, photoUrl) => {
     return new Promise((resolve, reject) => {
-      db.query('INSERT INTO photos (collection_id, photo_url) VALUES (?, ?)', [collectionId, photoUrl], (err, result) => {
+      db.query('INSERT INTO photos (collection_id, photo_url, created_at) VALUES (?, ?, ?)',
+      [collectionId, photoUrl, created], (err, result) => {
         if (err) {
           reject(err);
         } else {
@@ -15,8 +15,6 @@ const Photo = {
       });
     });
   },
-
-  // Retrieve all photos in a collection
   getAllByCollectionId: (collectionId) => {
     return new Promise((resolve, reject) => {
       db.query('SELECT * FROM photos WHERE collection_id = ?', [collectionId], (err, results) => {
@@ -29,7 +27,6 @@ const Photo = {
     });
   },
 
-  // Retrieve a single photo by ID
   getById: (photoId) => {
     return new Promise((resolve, reject) => {
       db.query('SELECT * FROM photos WHERE id = ?', [photoId], (err, result) => {
@@ -41,8 +38,6 @@ const Photo = {
       });
     });
   },
-
-  // Update a photo's URL
   updateUrl: (photoId, newUrl) => {
     return new Promise((resolve, reject) => {
       db.query('UPDATE photos SET photo_url = ? WHERE id = ?', [newUrl, photoId], (err, result) => {
@@ -55,7 +50,6 @@ const Photo = {
     });
   },
 
-  // Delete a photo by ID
   delete: (photoId) => {
     return new Promise((resolve, reject) => {
       db.query('DELETE FROM photos WHERE id = ?', [photoId], (err, result) => {
@@ -68,7 +62,6 @@ const Photo = {
     });
   },
 
-  // Add more methods as needed for your photos
 };
 
 module.exports = Photo;
