@@ -1,5 +1,4 @@
 // models/Photo.js
-
 const db = require('../config/database');
 
 const Photo = {

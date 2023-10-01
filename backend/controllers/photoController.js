@@ -1,5 +1,4 @@
 // controllers/photoController.js
-
 const Photo = require('../models/Photo');
 
 const photoController = {

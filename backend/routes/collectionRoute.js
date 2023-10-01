@@ -14,7 +14,7 @@ router.post(
 );
 
 router.get('/collections', collectionController.getAllCollections);
-
+ 
 router.get('/collections/:id', collectionController.getCollectionById);
 
 router.put(
