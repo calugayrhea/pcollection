@@ -14,17 +14,17 @@ router.post(
 );
 
 router.get('/collections', collectionController.getAllCollections);
- 
+
 router.get('/collections/:id', collectionController.getCollectionById);
 
 router.put(
-    '/collections/:id',
-    [
-      body('name').notEmpty().withMessage('New name is required.'),
-      body('email').notEmpty().withMessage('New email is required.').isEmail().withMessage('Invalid email address.'),
-    ],
-    collectionController.updateCollection
-  );
+  '/collections/:id',
+  [
+    body('name').notEmpty().withMessage('New name is required.'),
+    body('email').notEmpty().withMessage('New email is required.').isEmail().withMessage('Invalid email address.'),
+  ],
+  collectionController.updateCollection
+);
 
 router.delete('/collections/:id', collectionController.deleteCollection);
 

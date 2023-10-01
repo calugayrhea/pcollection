@@ -1,19 +1,22 @@
-// models/Photo.js
 const db = require('../config/database');
 
 const Photo = {
-  create: (collectionId, photoUrl) => {
+  create: (collectionId, photoUrl, created_at) => {
     return new Promise((resolve, reject) => {
-      db.query('INSERT INTO photos (collection_id, photo_url, created_at) VALUES (?, ?, ?)',
-      [collectionId, photoUrl, created], (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
+      db.query(
+        'INSERT INTO photos (collection_id, photo_url, created_at) VALUES (?, ?, ?)',
+        [collectionId, photoUrl, created_at],
+        (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
         }
-      });
+      );
     });
   },
+
   getAllByCollectionId: (collectionId) => {
     return new Promise((resolve, reject) => {
       db.query('SELECT * FROM photos WHERE collection_id = ?', [collectionId], (err, results) => {
@@ -26,20 +29,9 @@ const Photo = {
     });
   },
 
-  getById: (photoId) => {
+  delete: (collectionId, photoUrl) => {
     return new Promise((resolve, reject) => {
-      db.query('SELECT * FROM photos WHERE id = ?', [photoId], (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result[0]);
-        }
-      });
-    });
-  },
-  updateUrl: (photoId, newUrl) => {
-    return new Promise((resolve, reject) => {
-      db.query('UPDATE photos SET photo_url = ? WHERE id = ?', [newUrl, photoId], (err, result) => {
+      db.query('DELETE FROM photos WHERE collection_id = ? AND photo_url = ?', [collectionId, photoUrl], (err, result) => {
         if (err) {
           reject(err);
         } else {
@@ -48,19 +40,6 @@ const Photo = {
       });
     });
   },
-
-  delete: (photoId) => {
-    return new Promise((resolve, reject) => {
-      db.query('DELETE FROM photos WHERE id = ?', [photoId], (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
-        }
-      });
-    });
-  },
-
 };
 
 module.exports = Photo;

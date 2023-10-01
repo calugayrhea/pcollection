@@ -1,17 +1,34 @@
-// controllers/photoController.js
 const Photo = require('../models/Photo');
+const Collection = require('../models/Collections');
 
 const photoController = {
   createPhoto: async (req, res) => {
     try {
       const { collectionId, photoUrl } = req.body;
-      const created_at = new Date(); 
-      const newPhoto = await Photo.create(collectionId, photoUrl, created_at); 
+      
+      const collection = await Collection.getById(collectionId);
+      if (!collection) {
+        return res.status(404).json({ error: 'Collection not found.' });
+      }
+      
+      const currentPhotoCount = await Photo.getPhotoCount(collectionId);
+      if (currentPhotoCount >= collection.max_photos) {
+        return res.status(400).json({ error: 'Collection has reached its photo limit.' });
+      }
+      
+      const uploadedFile = req.file; 
+      if (!uploadedFile || uploadedFile.size > collection.max_file_size) {
+        return res.status(400).json({ error: 'File size exceeds the limit.' });
+      }
+      const created_at = new Date();
+      const newPhoto = await Photo.create(collectionId, photoUrl, created_at);
+      
       res.status(201).json({ message: 'Photo is successfully uploaded', photo: newPhoto });
     } catch (error) {
       res.status(500).json({ error: 'Unable to create photo.' });
     }
   },
+  
   getAllPhotosByCollectionId: async (req, res) => {
     try {
       const collectionId = req.params.collectionId;
@@ -21,46 +38,14 @@ const photoController = {
       res.status(500).json({ error: 'Unable to fetch photos.' });
     }
   },
-
-  getPhotoById: async (req, res) => {
-    try {
-      const photoId = req.params.id;
-      const photo = await Photo.getById(photoId);
-      if (!photo) {
-        res.status(404).json({ error: 'Photo not found.' });
-      } else {
-        res.json(photo);
-      }
-    } catch (error) {
-      res.status(500).json({ error: 'Unable to fetch photo.' });
-    }
-  },
-  updatePhotoUrl: async (req, res) => {
-    try {
-      const photoId = req.params.id;
-      const newUrl = req.body.photoUrl;
-      
-      console.log('Received request to update photo with ID:', photoId);
-      const existingPhoto = await Photo.getById(photoId);
-      console.log('Existing photo:', existingPhoto);
-
-      if (!existingPhoto) {
-        console.log('Photo not found.');
-        return res.status(404).json({ error: 'Photo not found.' });
-      }
-
-      await Photo.updateUrl(photoId, newUrl);
-      console.log('Photo URL updated successfully.');
-      res.json({ message: 'Photo URL updated successfully.' });
-    } catch (error) {
-      console.error('Error updating photo URL:', error);
-      res.status(500).json({ error: 'Unable to update photo URL.' });
-    }
-  },
+  
   deletePhoto: async (req, res) => {
     try {
-      const photoId = req.params.id;
-      await Photo.delete(photoId);
+      const collectionId = req.params.collectionId;
+      const photoUrl = req.body.photoUrl;
+      
+      await Photo.delete(collectionId, photoUrl);
+      
       res.json({ message: 'Photo deleted successfully.' });
     } catch (error) {
       res.status(500).json({ error: 'Unable to delete photo.' });
