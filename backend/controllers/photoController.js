@@ -1,54 +1,61 @@
-const Photo = require('../models/Photo');
+// photoController.js
+const fs = require('fs');
+const path = require('path');
 const Collection = require('../models/Collections');
+const Photo = require('../models/Photo');
 
 const photoController = {
-  createPhoto: async (req, res) => {
-    try {
-      const { collectionId, photoUrl } = req.body;
-      
-      const collection = await Collection.getById(collectionId);
-      if (!collection) {
-        return res.status(404).json({ error: 'Collection not found.' });
-      }
-      
-      const currentPhotoCount = await Photo.getPhotoCount(collectionId);
-      if (currentPhotoCount >= collection.max_photos) {
-        return res.status(400).json({ error: 'Collection has reached its photo limit.' });
-      }
-      
-      const uploadedFile = req.file; 
-      if (!uploadedFile || uploadedFile.size > collection.max_file_size) {
-        return res.status(400).json({ error: 'File size exceeds the limit.' });
-      }
-      const created_at = new Date();
-      const newPhoto = await Photo.create(collectionId, photoUrl, created_at);
-      
-      res.status(201).json({ message: 'Photo is successfully uploaded', photo: newPhoto });
-    } catch (error) {
-      res.status(500).json({ error: 'Unable to create photo.' });
-    }
-  },
-  
-  getAllPhotosByCollectionId: async (req, res) => {
+  uploadPhotos: async (req, res) => {
     try {
       const collectionId = req.params.collectionId;
-      const photos = await Photo.getAllByCollectionId(collectionId);
-      res.json(photos);
+      const currentPhotoCount = await Photo.getCountByCollectionId(collectionId);
+  
+      console.log('collectionId:', collectionId); 
+      console.log('Uploaded photos:', req.files);
+  
+      let uploadedPhotoCount = 0;
+      
+      for (const photo of req.files) {
+        uploadedPhotoCount++;
+  
+        if (uploadedPhotoCount + currentPhotoCount > 5) {
+          console.log('Exceeded maximum number of photos allowed.');
+          return res.status(400).json({ error: 'Exceeded the maximum number of photos allowed.' });
+        }
+      }
+      if (!collectionId) {
+        return res.status(400).json({ error: 'Invalid collection ID.' });
+      }
+  
+      for (const photo of req.files) {
+        const photoPath = photo.path; 
+        await Photo.create(collectionId, photoPath);
+      }
+  
+      res.status(201).json({ message: 'Photos uploaded successfully.' });
     } catch (error) {
-      res.status(500).json({ error: 'Unable to fetch photos.' });
+      console.error(error);
+      res.status(500).json({ error: 'Unable to upload photos.' });
     }
   },
   
+
   deletePhoto: async (req, res) => {
     try {
-      const collectionId = req.params.collectionId;
-      const photoUrl = req.body.photoUrl;
-      
-      await Photo.delete(collectionId, photoUrl);
-      
+      const { collectionId, photoId } = req.params;
+
+      const photo = await Photo.getById(photoId);
+      if (!photo || photo.collection_id !== collectionId) {
+        return res.status(404).json({ error: 'Photo not found.' });
+      }
+      fs.unlinkSync(photo.file_path);
+
+      await Photo.delete(photoId);
+
       res.json({ message: 'Photo deleted successfully.' });
     } catch (error) {
-      res.status(500).json({ error: 'Unable to delete photo.' });
+      console.error(error);
+      res.status(500).json({ error: 'Unable to delete the photo.' });
     }
   },
 };

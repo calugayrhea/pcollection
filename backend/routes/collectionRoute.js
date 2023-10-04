@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const collectionController = require('../controllers/collectionController');
-const { body, validationResult } = require('express-validator');
+const photoController = require('../controllers/photoController');
 const Collection = require('../models/Collections');
+const { body, validationResult } = require('express-validator');
+const upload = require('../config/multerConfig'); 
 
 router.post(
   '/collections',
@@ -28,4 +30,16 @@ router.put(
 
 router.delete('/collections/:id', collectionController.deleteCollection);
 
+
+// Photos routes
+router.post(
+  '/collections/:collectionId/photos',
+  upload.array('photos', 5),
+  photoController.uploadPhotos
+);
+
+router.delete(
+  '/collections/:collectionId/photos/:photoId',
+  photoController.deletePhoto
+);
 module.exports = router;
