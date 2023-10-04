@@ -1,18 +1,31 @@
-// routes/photoRoutes.js
+// // routes/photoRoutes.js
 
-const express = require('express');
-const router = express.Router();
-const photoController = require('../controllers/photoController');
+// const express = require('express');
+// const router = express.Router();
+// const photoController = require('../controllers/photoController');
+// const { body, validationResult } = require('express-validator');
+// const multer = require('multer'); 
 
+// const storage = multer.memoryStorage();
+// const upload = multer({
+//   storage: storage,
+//   limits: {
+//     fileSize: 5 * 1024 * 1024, 
+//   },
+// });
 
-router.post('/photos', photoController.createPhoto);
+// router.post(
+//   '/collections/:collectionId/photos',
+//   upload.single('photo'),
+//   [
+//     body('collectionId').notEmpty().withMessage('Collection ID is required.'),
+//     body('photoUrl').notEmpty().withMessage('Photo URL is required.'),
+//   ],
+//   photoController.createPhoto
+// );
 
-router.get('/collections/:collectionId/photos', photoController.getAllPhotosByCollectionId);
+// router.get('/collections/:collectionId/photos', photoController.getAllPhotosByCollectionId);
 
-router.get('/photos/:id', photoController.getPhotoById);
+// router.delete('/collections/:collectionId/photos', photoController.deletePhoto);
 
-router.put('/photos/:id', photoController.updatePhotoUrl);
-
-router.delete('/photos/:id', photoController.deletePhoto);
-
-module.exports = router;
+// module.exports = router;

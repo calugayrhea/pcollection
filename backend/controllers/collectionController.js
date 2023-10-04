@@ -3,6 +3,7 @@ const { validationResult } = require('express-validator');
 const validator = require('validator'); 
 
 const collectionController = {
+  
   createCollection: async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -11,6 +12,7 @@ const collectionController = {
       }
   
       const { name, email } = req.body;
+  
       if (!name || !email) {
         return res.status(400).json({ error: 'Both name and email are required.' });
       }
@@ -18,9 +20,11 @@ const collectionController = {
       if (!validator.isEmail(email)) {
         return res.status(400).json({ error: 'Invalid email address.' });
       }
-  
-      // Include the created_at field when inserting
       const newCollection = await Collection.create(name, email);
+  
+      if (!newCollection) {
+        return res.status(500).json({ error: 'Failed to create the collection.' });
+      }
   
       res.status(201).json({ message: 'Collection is successfully created.', collection: newCollection });
     } catch (error) {
@@ -28,7 +32,7 @@ const collectionController = {
       res.status(500).json({ error: 'Unable to create collection.' });
     }
   },
-
+  
 
   getAllCollections: async (req, res) => {
     try {
@@ -59,25 +63,38 @@ const collectionController = {
       const collectionId = req.params.id;
       const newName = req.body.name;
       const newEmail = req.body.email;
-
+  
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
+  
+      const collection = await Collection.getById(collectionId);
+  
+      if (!collection) {
+        return res.status(404).json({ error: 'Collection not found.' });
+      }
 
+      const userEmailAddress = req.body.email; 
+  
+      if (collection.owner_email !== userEmailAddress) {
+        return res.status(403).json({ error: 'Only the owner can edit this collection.' });
+      }
+  
       if (!newName) {
         return res.status(400).json({ error: 'New name is required.' });
       }
-
+  
       await Collection.updateNameAndEmail(collectionId, newName, newEmail);
-
+  
       res.json({ message: 'Collection name and email updated successfully.' });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Unable to update collection name and email.' });
     }
   },
-
+  
+  
   deleteCollection: async (req, res) => {
     try {
       const collectionId = req.params.id;
