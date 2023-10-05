@@ -1,7 +1,5 @@
-// models/Collection.js
 
 const db = require('../config/database'); 
-
 
 const Collection = {
   create: (name, email) => {
@@ -44,40 +42,19 @@ const Collection = {
     });
   },
 
-  updateNameAndEmail: (collectionId, newName, newEmail, userEmailAddress) => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const collection = await Collection.getById(collectionId);
-  
-        if (!collection) {
-          reject(new Error('Collection not found.'));
-          return;
-        }
-  
-        if (collection.owner_email !== userEmailAddress) {
-          reject(new Error('Only the owner can edit this collection.'));
-          return;
-        }
-  
-        if (!newName) {
-          reject(new Error('New name is required.'));
-          return;
-        }
-  
-        db.query(
-          'UPDATE collections SET name = ?, owner_email = ? WHERE id = ?',
-          [newName, newEmail, collectionId],
-          (err, result) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(result);
-            }
+  updateNameAndEmail: (collectionId, newName, newEmail) => {
+    return new Promise((resolve, reject) => {
+      db.query(
+        'UPDATE collections SET name = ?, owner_email = ? WHERE id = ?',
+        [newName, newEmail, collectionId],
+        (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
           }
-        );
-      } catch (error) {
-        reject(error);
-      }
+        }
+      );
     });
   },
   
