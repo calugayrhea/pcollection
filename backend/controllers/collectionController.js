@@ -64,6 +64,10 @@ const collectionController = {
       const newName = req.body.name;
       const newEmail = req.body.email;
   
+      console.log('Collection ID:', collectionId);
+      console.log('New Name:', newName);
+      console.log('New Email:', newEmail);
+  
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -71,21 +75,29 @@ const collectionController = {
   
       const collection = await Collection.getById(collectionId);
   
+      console.log('Collection:', collection);
+  
       if (!collection) {
         return res.status(404).json({ error: 'Collection not found.' });
       }
-
-      const userEmailAddress = req.body.email; 
   
-      if (collection.owner_email !== userEmailAddress) {
+      console.log('Owner Email:', collection.owner_email);
+  
+      if (collection.owner_email !== newEmail) {
+        console.log('Authorization Failed');
         return res.status(403).json({ error: 'Only the owner can edit this collection.' });
       }
   
       if (!newName) {
+        console.log('New Name is Empty');
         return res.status(400).json({ error: 'New name is required.' });
       }
+
+      console.log('Before Updating Collection');
   
       await Collection.updateNameAndEmail(collectionId, newName, newEmail);
+  
+      console.log('Collection Updated Successfully');
   
       res.json({ message: 'Collection name and email updated successfully.' });
     } catch (error) {

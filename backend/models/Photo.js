@@ -1,4 +1,3 @@
-// models/Photo.js
 const db = require('../config/database');
 
 const Photo = {
@@ -21,7 +20,7 @@ const Photo = {
 
   getById: (photoId) => {
     return new Promise((resolve, reject) => {
-      db.query('SELECT * FROM photos WHERE id = ?', [photoId], (err, result) => {
+      db.query('SELECT * FROM photos WHERE photo_id = ?', [photoId], (err, result) => {
         if (err) {
           reject(err);
         } else {
@@ -31,9 +30,33 @@ const Photo = {
     });
   },
 
+  getAllByCollectionId: (collectionId) => {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT * FROM photos WHERE collection_id = ?', [collectionId], (err, results) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(results);
+        }
+      });
+    });
+  },
+
+  getAll: () => {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT * FROM photos', (err, results) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(results);
+        }
+      });
+    });
+  },
+
   delete: (photoId) => {
     return new Promise((resolve, reject) => {
-      db.query('DELETE FROM photos WHERE id = ?', [photoId], (err, result) => {
+      db.query('DELETE FROM photos WHERE photo_id = ?', [photoId], (err, result) => {
         if (err) {
           reject(err);
         } else {
@@ -41,7 +64,8 @@ const Photo = {
         }
       });
     });
-  },
+},
+
 
   getCountByCollectionId: (collectionId) => {
     return new Promise((resolve, reject) => {

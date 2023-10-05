@@ -30,16 +30,17 @@ router.put(
 
 router.delete('/collections/:id', collectionController.deleteCollection);
 
-
-// Photos routes
 router.post(
   '/collections/:collectionId/photos',
   upload.array('photos', 5),
   photoController.uploadPhotos
 );
 
+router.get('/collections/:collectionId/photos', photoController.getAllPhotosByCollectionId);
+
 router.delete(
   '/collections/:collectionId/photos/:photoId',
   photoController.deletePhoto
 );
+
 module.exports = router;
