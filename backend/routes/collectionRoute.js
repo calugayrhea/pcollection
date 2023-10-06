@@ -5,12 +5,18 @@ const photoController = require('../controllers/photoController');
 const Collection = require('../models/Collections');
 const { body, validationResult } = require('express-validator');
 const upload = require('../config/multerConfig'); 
+const HttpStatus = require('../config/httpStatuscode');
+const ErrorMessages = require('../config/errorMessages');
 
 router.post(
   '/collections',
   [
-    body('name').notEmpty().withMessage('Name is required.'),
-    body('email').notEmpty().withMessage('Email is required.').isEmail().withMessage('Invalid email address.'),
+    body('name').notEmpty().withMessage(ErrorMessages.NAME_REQUIRED),
+    body('email')
+      .notEmpty()
+      .withMessage(ErrorMessages.EMAIL_REQUIRED)
+      .isEmail()
+      .withMessage(ErrorMessages.INVALID_EMAIL),
   ],
   collectionController.createCollection
 );
@@ -22,8 +28,12 @@ router.get('/collections/:id', collectionController.getCollectionById);
 router.put(
   '/collections/:id',
   [
-    body('name').notEmpty().withMessage('New name is required.'),
-    body('email').notEmpty().withMessage('New email is required.').isEmail().withMessage('Invalid email address.'),
+    body('name').notEmpty().withMessage(ErrorMessages.NAME_REQUIRED),
+    body('email')
+      .notEmpty()
+      .withMessage(ErrorMessages.EMAIL_REQUIRED)
+      .isEmail()
+      .withMessage(ErrorMessages.INVALID_EMAIL),
   ],
   collectionController.updateCollection
 );
