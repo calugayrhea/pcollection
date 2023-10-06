@@ -1,85 +1,73 @@
 <template>
-  <div class="flex flex-col h-screen">
-    <Header class="w-full" />
-    <div class="flex-grow flex flex-col items-center py-8">
-      <h3 class="text-2xl font-semibold mb-4">Edit Collection</h3>
-      <form @submit.prevent="updateCollection" class="bg-white p-6 rounded-lg shadow-md w-80">
-        <div class="mb-4">
-          <label for="editName" class="block text-gray-700">Name:</label>
-          <input v-model="editedCollection.name" type="text" id="editName" class="border rounded-md p-2 w-full" />
-        </div>
-        <div class="mb-4">
-          <label for="editEmail" class="block text-gray-700">Owner Email:</label>
-          <input v-model="editedCollection.owner_email" type="text" id="editEmail" class="border rounded-md p-2 w-full" />
-        </div>
-        <div class="flex justify-end">
-          <button type="submit" class="bg-indigo-500 text-white px-4 py-2 rounded-md">Update</button>
-          <button @click="cancelEdit" class="bg-gray-300 text-gray-600 px-4 py-2 rounded-md ml-2">Cancel</button>
-        </div>
-      </form>
-    </div>
+  <div class="w-full">
+    <Header />
+    <h2 class="text-3xl font-semibold mb-4">Edit Collection</h2>
+
+    <form @submit.prevent="updateCollection" class="space-y-4">
+      <div class="flex flex-col space-y-2">
+        <label for="editName" class="block text-sm font-medium text-gray-700">Name:</label>
+        <input v-model="editedCollection.name" type="text" id="editName" required class="p-2 border rounded-md focus:ring focus:ring-indigo-300">
+      </div>
+      <div class="flex flex-col space-y-2">
+        <label for="editEmail" class="block text-sm font-medium text-gray-700">Email:</label>
+        <input v-model="editedCollection.email" type="email" id="editEmail" required class="p-2 border rounded-md focus:ring focus:ring-indigo-300">
+      </div>
+      <div class="text-center mt-4">
+        <button type="submit" class="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 focus:outline-none focus:ring focus:ring-indigo-300">Update</button>
+      </div>
+    </form>
   </div>
 </template>
+
 <script>
-
-
-import Header from '@/components/Header.vue';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import api from '@/plugins/api';
+import Header from '@/components/Header.vue';
 
 export default {
   components: {
     Header,
   },
-  data() {
-    return {
-      collectionId: this.$route.params.id,
-      editedCollection: {},
-      errorMessage: '',
-    };
-  },
-  computed: {
-    isUserOwner() {
-      return this.userEmailAddress === this.editedCollection.owner_email;
-    },
-  },
-  methods: {
-    async fetchData() {
+  setup() {
+    const editedCollection = ref({
+      id: null,
+      name: '',
+      email: '',
+    });
+
+    const router = useRouter();
+
+    const updateCollection = async () => {
       try {
-        const collection = await api.getCollectionById(this.collectionId);
-        if (collection) {
-          this.editedCollection = { ...collection };
+        const collectionId = editedCollection.value.id;
+        const newCollectionData = {
+          name: editedCollection.value.name,
+          email: editedCollection.value.email,
+        };
+
+        const response = await api.updateCollection(collectionId, newCollectionData);
+
+        if (response && response.message === 'Successfully updated') {
+          router.push({ name: 'collection-list' });
         } else {
-          // Handle case where collection is not found
-          this.errorMessage = 'Collection not found.';
+          // Handle the case where the API response indicates an error
+          // You can show an error message or take other appropriate actions.
         }
       } catch (error) {
-        this.errorMessage = 'Failed to fetch collection data. Please try again.';
-        console.error(error);
+        console.error('Error updating collection:', error);
+        // Handle the error, show an error message to the user, etc.
       }
-    },
-    async updateCollection() {
-  if (this.isUserOwner) {
-    try {
-      const response = await api.updateCollection(this.collectionId, this.editedCollection);
-      if (response) {
-        this.$router.push({ name: 'collection-list' }); // Redirect to collection-list route
-      }
-    } catch (error) {
-      this.errorMessage = 'Failed to update the collection. Please try again.';
-      console.error(error);
-    }
-  } else {
-    this.errorMessage = 'You are not the owner of this collection. Editing is not allowed.';
-  }
-},
+    };
 
-
-    cancelEdit() {
-      this.$emit('cancel-edit');
-    },
-  },
-  created() {
-    this.fetchData();
+    return {
+      editedCollection,
+      updateCollection,
+    };
   },
 };
 </script>
+
+<style scoped>
+/* Add your custom styles here */
+</style>
