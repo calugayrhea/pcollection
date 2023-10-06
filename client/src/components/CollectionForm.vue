@@ -37,10 +37,38 @@
           </button>
         </div>
       </form>
+        <!-- Notification Modal -->
+      <div v-if="notification.show" class="fixed inset-0 flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <div
+            class="p-4 rounded-md flex flex-col items-center"
+            :class="notification.type === 'success' ? 'bg-green-500' : 'bg-red-500'"
+          >
+            <!-- Display larger icon at the top -->
+            <img
+              v-if="notification.type === 'success'"
+              src="@/assets/images/right.png"
+              alt="Success Icon"
+              class="w-16 h-16 mb-4"
+            />
+            <img
+              v-else
+              src="@/assets/images/wrong.png"
+              alt="Error Icon"
+              class="w-16 h-16 mb-4"
+            />
+            <span
+              class="text-lg"
+              :class="notification.type === 'success' ? 'text-white' : 'text-white'"
+            >
+              {{ notification.message }}
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
-
 
 <script>
 import { ref } from 'vue';
@@ -52,17 +80,27 @@ export default {
     const collection = ref({
       name: '',
       email: '',
-      created_at: null, // Initialize created_at to null
+      created_at: null, 
     });
+
+    const notification = ref({ show: false, message: '', type: '' }); 
 
     const router = useRouter();
 
     const createCollection = async () => {
       try {
+        console.log('Making API request...');
         const response = await api.createCollection(collection.value);
+        console.log('API response:', response);
+
+        notification.value = {
+          message: response.message,
+          type: 'success',
+          show: true,
+        };
+
         const newCollection = response.collection;
 
-        // Update the created_at attribute if it exists in the response
         if (newCollection.created_at) {
           collection.value.created_at = newCollection.created_at;
         }
@@ -70,14 +108,33 @@ export default {
         collection.value.name = '';
         collection.value.email = '';
 
-        router.push({ name: 'collection-list' });
+        setTimeout(() => {
+          router.push({ name: 'collection-list' });
+        }, 1000); 
+
       } catch (error) {
+        console.log('Error response:', error.response.data);
         console.error(error);
+
+        if (error.response && error.response.data) {
+          notification.value = {
+            message: error.response.data.error,
+            type: 'error',
+            show: true,
+          };
+        } else {
+          notification.value = {
+            message: 'An error occurred while creating the collection.',
+            type: 'error',
+            show: true,
+          };
+        }
       }
     };
 
     return {
       collection,
+      notification,
       createCollection,
     };
   },
