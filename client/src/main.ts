@@ -1,10 +1,10 @@
 import { createApp } from 'vue';
 import App from './App.vue';
-import router from './router'; // Import the router instance
+import router from './router'; 
 
-import './assets/main.css'; // Import your CSS files
-import './index.css'; // Import your index.css file
+import './assets/main.css';
+import './index.css'; 
 
 createApp(App)
-  .use(router) // Use the router
+  .use(router) 
   .mount('#app');

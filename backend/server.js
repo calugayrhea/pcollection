@@ -7,7 +7,7 @@ const cors = require('cors');
 app.use(bodyParser.json());
 app.use(cors());
 
-const collectionRoutes = require('./routes/collectionRoute'); 
+const collectionRoutes = require('./routes/collectionRoute');
 app.use('/api', collectionRoutes);
 
 app.listen(port, () => {

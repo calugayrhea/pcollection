@@ -1,60 +1,60 @@
 const Collection = require('../models/Collections');
 const { validationResult } = require('express-validator');
-const validator = require('validator'); 
+const validator = require('validator');
+const HttpStatus = require('../config/httpStatuscode');
+const ErrorMessages = require('../config/errorMessages');
 
 const collectionController = {
-  
   createCollection: async (req, res) => {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+        return res.status(HttpStatus.BAD_REQUEST).json({ errors: errors.array() });
       }
-  
+
       const { name, email } = req.body;
-  
+
       if (!name || !email) {
-        return res.status(400).json({ error: 'Both name and email are required.' });
+        return res.status(HttpStatus.BAD_REQUEST).json({ error: ErrorMessages.NAME_REQUIRED });
       }
-  
+
       if (!validator.isEmail(email)) {
-        return res.status(400).json({ error: 'Invalid email address.' });
+        return res.status(HttpStatus.BAD_REQUEST).json({ error: ErrorMessages.INVALID_EMAIL });
       }
+
       const newCollection = await Collection.create(name, email);
-  
+
       if (!newCollection) {
-        return res.status(500).json({ error: 'Failed to create the collection.' });
+        return res.status(HttpStatus.SERVER_ERROR).json({ error: ErrorMessages.SERVER_ERROR });
       }
-  
-      res.status(201).json({ message: 'Collection is successfully created.', collection: newCollection });
+
+      res.status(HttpStatus.CREATED).json({ message: ErrorMessages.SUCCESSFULLY_CREATED, collection: newCollection });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'Unable to create collection.' });
+      res.status(HttpStatus.SERVER_ERROR).json({ error: ErrorMessages.SERVER_ERROR });
     }
   },
-  
 
   getAllCollections: async (req, res) => {
     try {
       const collections = await Collection.getAll();
-      res.json(collections);
+      res.status(HttpStatus.OK).json(collections);
     } catch (error) {
-      res.status(500).json({ error: 'Unable to fetch collections.' });
+      res.status(HttpStatus.SERVER_ERROR).json({ error: ErrorMessages.SERVER_ERROR });
     }
   },
-
 
   getCollectionById: async (req, res) => {
     try {
       const collectionId = req.params.id;
       const collection = await Collection.getById(collectionId);
       if (!collection) {
-        res.status(404).json({ error: 'Collection not found.' });
+        res.status(HttpStatus.NOT_FOUND).json({ error: ErrorMessages.COLLECTION_NOT_FOUND });
       } else {
-        res.json(collection);
+        res.status(HttpStatus.OK).json(collection);
       }
     } catch (error) {
-      res.status(500).json({ error: 'Unable to fetch collection.' });
+      res.status(HttpStatus.SERVER_ERROR).json({ error: ErrorMessages.SERVER_ERROR });
     }
   },
 
@@ -63,57 +63,56 @@ const collectionController = {
       const collectionId = req.params.id;
       const newName = req.body.name;
       const newEmail = req.body.email;
-  
+
       console.log('Collection ID:', collectionId);
       console.log('New Name:', newName);
       console.log('New Email:', newEmail);
-  
+
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+        return res.status(HttpStatus.BAD_REQUEST).json({ errors: errors.array() });
       }
-  
+
       const collection = await Collection.getById(collectionId);
-  
+
       console.log('Collection:', collection);
-  
+
       if (!collection) {
-        return res.status(404).json({ error: 'Collection not found.' });
+        return res.status(HttpStatus.NOT_FOUND).json({ error: ErrorMessages.COLLECTION_NOT_FOUND });
       }
-  
+
       console.log('Owner Email:', collection.owner_email);
-  
+
       if (collection.owner_email !== newEmail) {
         console.log('Authorization Failed');
-        return res.status(403).json({ error: 'Only the owner can edit this collection.' });
+        return res.status(HttpStatus.FORBIDDEN).json({ error: ErrorMessages.AUTHORIZATION_FAILED });
       }
-  
+
       if (!newName) {
         console.log('New Name is Empty');
-        return res.status(400).json({ error: 'New name is required.' });
+        return res.status(HttpStatus.BAD_REQUEST).json({ error: ErrorMessages.NAME_REQUIRED });
       }
 
       console.log('Before Updating Collection');
-  
+
       await Collection.updateNameAndEmail(collectionId, newName, newEmail);
-  
+
       console.log('Collection Updated Successfully');
-  
-      res.json({ message: 'Collection name and email updated successfully.' });
+
+      res.status(HttpStatus.OK).json({ message: ErrorMessages.SUCCESSFULLY_UPDATED });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'Unable to update collection name and email.' });
+      res.status(HttpStatus.SERVER_ERROR).json({ error: ErrorMessages.SERVER_ERROR });
     }
   },
-  
-  
+
   deleteCollection: async (req, res) => {
     try {
       const collectionId = req.params.id;
       await Collection.delete(collectionId);
-      res.json({ message: 'Collection deleted successfully.' });
+      res.status(HttpStatus.OK).json({ message: ErrorMessages.SUCCESSFULLY_DELETED });
     } catch (error) {
-      res.status(500).json({ error: 'Unable to delete collection.' });
+      res.status(HttpStatus.SERVER_ERROR).json({ error: ErrorMessages.SERVER_ERROR });
     }
   },
 };

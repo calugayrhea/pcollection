@@ -2,98 +2,98 @@ const fs = require('fs');
 const path = require('path');
 const Collection = require('../models/Collections');
 const Photo = require('../models/Photo');
+const HttpStatus = require('../config/httpStatuscode');
+const ErrorMessages = require('../config/errorMessages');
 
 const photoController = {
   uploadPhotos: async (req, res) => {
     try {
       const collectionId = req.params.collectionId;
       const currentPhotoCount = await Photo.getCountByCollectionId(collectionId);
-  
-      console.log('collectionId:', collectionId); 
+
+      console.log('collectionId:', collectionId);
       console.log('Uploaded photos:', req.files);
-  
+
       let uploadedPhotoCount = 0;
-      
+
       for (const photo of req.files) {
         uploadedPhotoCount++;
-  
+
         if (uploadedPhotoCount + currentPhotoCount > 5) {
           console.log('Exceeded maximum number of photos allowed.');
-          return res.status(400).json({ error: 'Exceeded the maximum number of photos allowed.' });
+          return res.status(HttpStatus.BAD_REQUEST).json({ error: ErrorMessages.MAX_PHOTOS_EXCEEDED });
         }
       }
       if (!collectionId) {
-        return res.status(400).json({ error: 'Invalid collection ID.' });
+        return res.status(HttpStatus.BAD_REQUEST).json({ error: ErrorMessages.INVALID_COLLECTION_ID });
       }
-  
+
       for (const photo of req.files) {
-        const photoPath = photo.path; 
+        const photoPath = photo.path;
         await Photo.create(collectionId, photoPath);
       }
-  
-      res.status(201).json({ message: 'Photos uploaded successfully.' });
+
+      res.status(HttpStatus.CREATED).json({ message: ErrorMessages.SUCCESSFULLY_CREATED });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'Unable to upload photos.' });
+      res.status(HttpStatus.SERVER_ERROR).json({ error: ErrorMessages.UNABLE_TO_UPLOAD });
     }
   },
-
 
   getAllPhotosByCollectionId: async (req, res) => {
     try {
       const collectionId = req.params.collectionId;
       const photos = await Photo.getAllByCollectionId(collectionId);
-      res.status(200).json(photos);
+      res.status(HttpStatus.OK).json(photos);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'Unable to retrieve photos by collection ID.' });
+      res.status(HttpStatus.SERVER_ERROR).json({ error: ErrorMessages.SERVER_ERROR });
     }
   },
-
 
   deletePhoto: async (req, res) => {
     try {
       const { collectionId, photoId } = req.params;
-      const userEmail = req.body.email; 
-  
+      const userEmail = req.body.email;
+
       console.log('Request Collection ID:', collectionId);
       console.log('Request Photo ID:', photoId);
 
       const photo = await Photo.getById(photoId);
       console.log('Photo:', photo);
-  
+
       if (!photo) {
         console.log('Photo not found');
-        return res.status(404).json({ error: 'Photo not found.' });
+        return res.status(HttpStatus.NOT_FOUND).json({ error: ErrorMessages.PHOTO_NOT_FOUND });
       }
-  
+
       if (photo.collection_id !== parseInt(collectionId)) {
         console.log('Mismatched collectionId');
-        return res.status(400).json({ error: 'Mismatched collectionId.' });
+        return res.status(HttpStatus.BAD_REQUEST).json({ error: ErrorMessages.MISMATCHED_COLLECTION_ID });
       }
 
       const collection = await Collection.getById(parseInt(collectionId));
       if (!collection) {
         console.log('Collection not found');
-        return res.status(404).json({ error: 'Collection not found.' });
+        return res.status(HttpStatus.NOT_FOUND).json({ error: ErrorMessages.COLLECTION_NOT_FOUND });
       }
-  
+
       if (collection.owner_email !== userEmail) {
         console.log('Authorization Failed');
-        return res.status(403).json({ error: 'Only the owner can delete photos in this collection.' });
+        return res.status(HttpStatus.FORBIDDEN).json({ error: ErrorMessages.AUTHORIZATION_FAILED });
       }
 
       console.log('Attempting to delete file:', photo.file_path);
       fs.unlinkSync(photo.file_path);
-  
+
       console.log('File deleted successfully:', photo.file_path);
-  
+
       await Photo.delete(photoId);
-  
-      res.json({ message: 'Photo deleted successfully.' });
+
+      res.status(HttpStatus.OK).json({ message: ErrorMessages.SUCCESSFULLY_DELETED });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'Unable to delete the photo.' });
+      res.status(HttpStatus.SERVER_ERROR).json({ error: ErrorMessages.UNABLE_TO_DELETE });
     }
   },
 };

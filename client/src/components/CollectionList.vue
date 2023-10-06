@@ -5,7 +5,6 @@
 
     <div class="flex flex-col items-center mb-4">
       <div class="bg-white rounded-lg shadow-lg p-4 w-full lg:w-3/4 xl:w-3/4">
-        <!-- Filter Input with Vertically Centered Search Icon -->
         <div class="relative">
           <img
             src="@/assets/images/search.png"
@@ -18,42 +17,63 @@
             class="pl-10 p-3 border rounded-md mb-4 w-full"
           />
         </div>
-        <!-- End of Filter Input with Vertically Centered Search Icon -->
 
-        <table class="w-full">
-          <!-- Table Header -->
-          <thead>
-            <tr class="bg-gray-100">
-              <th class="p-3 text-left">Name</th>
-              <th class="p-3 text-left">Owner</th>
-              <th class="p-3 text-left">Created</th>
-            </tr>
-          </thead>
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="bg-gray-100">
+                <th class="p-3 text-left">Name</th>
+                <th class="p-3 text-left">Owner</th>
+                <th class="p-3 text-left">Created</th>
+                <th class="p-3 text-left">Actions</th> 
+              </tr>
+            </thead>
+  
+            <tbody>
+              <tr
+                v-for="collection in displayedCollections"
+                :key="collection.id"
+                class="border-b border-gray-300"
+              >
+                <td class="p-3">
+                  <div class="flex items-center">
+                    <img
+                      src="@/assets/images/folder.png"
+                      alt="Folder Icon"
+                      class="w-6 h-6 mr-2"
+                    />
+                    {{ collection.name.charAt(0).toUpperCase() + collection.name.slice(1) }}
+                  </div>
+                </td>
+                <td class="p-3">{{ collection.owner_email }}</td>
+                <td class="p-3">{{ collection.created_at || 'N/A' }}</td>
+                <td class="p-3 flex justify-between"> 
+                  <div class="flex items-center"> 
+                    <img
+                      src="@/assets/images/edit.png"
+                      alt="Edit Icon"
+                      class="w-4 h-4 cursor-pointer mr-2"
+                      @click="editCollection(collection.id)"
+                    />
+                    <img
+                      src="@/assets/images/delete.png"
+                      alt="Delete Icon"
+                      class="w-4 h-4 cursor-pointer mr-2"
+                      @click="deleteCollection(collection.id)"
+                    />
+                    <img
+                      src="@/assets/images/upload.png"
+                      alt="Upload Icon"
+                      class="w-4 h-4 cursor-pointer"
+                      @click="uploadFile(collection.id)"
+                    />
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div> 
 
-          <!-- Table Body -->
-          <tbody>
-            <tr
-              v-for="collection in displayedCollections"
-              :key="collection.id"
-              class="border-b border-gray-300"
-            >
-              <td class="p-3">
-                <div class="flex items-center">
-                  <img
-                    src="@/assets/images/folder.png"
-                    alt="Folder Icon"
-                    class="w-6 h-6 mr-2"
-                  />
-                  {{ collection.name.charAt(0).toUpperCase() + collection.name.slice(1) }}
-                </div>
-              </td>
-              <td class="p-3">{{ collection.owner_email }}</td>
-              <td class="p-3">{{ collection.created_at || 'N/A' }}</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <!-- Pagination and Items per page dropdown with Border -->
         <div class="mt-4 flex flex-col lg:flex-row justify-between items-center border-t border-gray-300 pt-4">
           <div class="text-gray-600 mb-2 lg:mb-0">
             Showing {{ startResult }} to {{ endResult }} of {{ totalResults }} results
@@ -61,13 +81,13 @@
           <div class="flex items-center space-x-2">
             <label for="pageSize" class="mr-2">Items per page:</label>
             <select v-model="pageSize" id="pageSize" class="p-2 border rounded-md">
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="20">20</option>
               <option value="50">50</option>
               <option value="100">100</option>
+              <option value="200">200</option>
+              <option value="250">250</option>
+              <option value="300">300</option>
             </select>
-            <!-- Pagination buttons with Border -->
+
             <div class="flex mt-2 lg:mt-0">
               <button
                 v-for="page in pageCount"
@@ -79,10 +99,9 @@
                 {{ page }}
               </button>
             </div>
-            <!-- End of Pagination buttons with Border -->
+
           </div>
         </div>
-        <!-- End of Pagination and Items per page dropdown with Border -->
       </div>
     </div>
   </div>
@@ -92,6 +111,7 @@
 
 
 <script>
+import { useRouter } from 'vue-router';
 import api from '@/plugins/api';
 import Header from '@/components/Header.vue';
 
@@ -104,7 +124,7 @@ export default {
     return {
       collections: [],
       filter: '',
-      pageSize: 5,
+      pageSize: 50,
       currentPage: 1,
     };
   },
@@ -155,6 +175,10 @@ export default {
       if (page >= 1 && page <= this.pageCount) {
         this.currentPage = page;
       }
+    },
+
+    editCollection(collectionId) {
+      this.$router.push({ name: 'edit-collection', params: { id: collectionId } });
     },
   },
   watch: {
