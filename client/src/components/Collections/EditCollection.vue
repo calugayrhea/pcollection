@@ -1,3 +1,4 @@
+
 <template>
   <div class="w-full relative flex justify-center items-center min-h-screen">
     <!-- Removed Header -->
@@ -48,7 +49,7 @@ export default {
 
     const router = useRouter();
 
-    const errorMessage = ref(''); // Initialize an error message ref
+    const errorMessage = ref(''); 
 
     const updateCollection = async () => {
       try {
@@ -56,19 +57,17 @@ export default {
         const newName = editedCollection.value.name;
         const newEmail = editedCollection.value.owner_email;
 
-        // Ensure that newEmail matches the owner_email before sending the request
         if (newEmail !== originalCollection.value.owner_email) {
-          // Display an error message to the user
-          errorMessage.value = "Authorization Failed: You don't have permission to update this collection.";
+
+          errorMessage.value = "Authorization Failedssss: You don't have permission to update this collection.";
           return;
         }
 
         const response = await api.updateCollection(collectionId, {
           name: newName,
-          email: newEmail, // Ensure the property names match what the server expects
+          email: newEmail, 
         });
 
-        // The rest of your code remains the same.
         console.log('Update Response:', response);
         if (response) {
           router.push('/collection-list');
@@ -99,7 +98,7 @@ export default {
       editedCollection,
       updateCollection,
       cancelUpdate,
-      errorMessage, // Add the error message to the return object
+      errorMessage, 
     };
   },
 };
