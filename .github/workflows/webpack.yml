@@ -1,9 +1,12 @@
-name: NodeJS and Vue 
+name: NodeJS and Vue
+
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - "main"
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - "main"
 
 jobs:
   build:
@@ -13,14 +16,14 @@ jobs:
       matrix:
         node-version: [14.x, 16.x, 18.x]
 
-   steps:
+    steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: v20.3.1
+          node-version: ${{ matrix.node-version }}
 
       - name: Install Dependencies
         run: npm install
@@ -29,5 +32,10 @@ jobs:
         run: |
           # Build your Vue.js app
           npm run build
-          # Run tests if you have them
-          npm test
+          # Run Jest tests with --detectOpenHandles
+          npx jest --detectOpenHandles
+
+      - name: Start Node.js Server
+        run: |
+          # Start your Node.js server with nodemon
+          nodemon server.js
