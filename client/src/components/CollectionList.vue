@@ -178,8 +178,8 @@ export default {
     },
 
     editCollection(collectionId) {
-      this.$router.push({ name: 'edit-collection', params: { id: collectionId } });
-    },
+  this.$router.push({ name: 'edit-collection', params: { id: collectionId } });
+}
   },
   watch: {
     pageSize: {

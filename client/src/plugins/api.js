@@ -33,11 +33,12 @@ export default {
   async updateCollection(collectionId, collectionData) {
     try {
       const response = await axios.put(`${API_BASE_URL}/collections/${collectionId}`, collectionData);
-      return response.data;
+      return response.data; // Returning the entire response data
     } catch (error) {
       throw error;
     }
   },
+  
 
   async deleteCollection(collectionId) {
     try {

@@ -106,12 +106,21 @@ const collectionController = {
     }
   },
 
+ 
   deleteCollection: async (req, res) => {
     try {
       const collectionId = req.params.id;
-      await Collection.delete(collectionId);
-      res.status(HttpStatus.OK).json({ message: ErrorMessages.SUCCESSFULLY_DELETED });
+      const result = await Collection.delete(collectionId);
+  
+      if (result.affectedRows === 0) {
+        console.error('Collection not found');
+        return res.status(HttpStatus.NOT_FOUND).json({ error: ErrorMessages.COLLECTION_NOT_FOUND });
+      }
+  
+      console.log('Collection deleted successfully');
+      res.status(HttpStatus.NO_CONTENT).send();
     } catch (error) {
+      console.error('Error deleting collection:', error);
       res.status(HttpStatus.SERVER_ERROR).json({ error: ErrorMessages.SERVER_ERROR });
     }
   },

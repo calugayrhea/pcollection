@@ -45,8 +45,8 @@ const Collection = {
   updateNameAndEmail: (collectionId, newName, newEmail) => {
     return new Promise((resolve, reject) => {
       db.query(
-        'UPDATE collections SET name = ?, owner_email = ? WHERE id = ?',
-        [newName, newEmail, collectionId],
+        'UPDATE collections SET name = ? WHERE id = ? AND owner_email = ?',
+        [newName, collectionId, newEmail],
         (err, result) => {
           if (err) {
             reject(err);
@@ -57,19 +57,24 @@ const Collection = {
       );
     });
   },
-  
 
   delete: (collectionId) => {
     return new Promise((resolve, reject) => {
-      db.query('DELETE FROM collections WHERE id = ?', [collectionId], (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
+      db.query(
+        'DELETE FROM collections WHERE id = ?',
+        [collectionId],
+        (err, result) => {
+          if (err) {
+            console.error('Error deleting collection:', err); 
+            reject(err);
+          } else {
+            console.log('Collection deleted successfully'); 
+            resolve(result);
+          }
         }
-      });
+      );
     });
-  },
+  },  
 };
 
 module.exports = Collection;

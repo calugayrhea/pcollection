@@ -1,74 +1,77 @@
 <template>
   <div class="flex items-center justify-center h-screen">
-    <div>
-      <h1 class="text-3xl font-bold mb-4">Create a Collection</h1>
-      <form @submit.prevent="createCollection" class="space-y-4">
-        <div>
-          <label for="name" class="block text-sm font-medium text-gray-700">Name:</label>
-          <input
-            type="text"
-            id="name"
-            v-model="collection.name"
-            required
-            class="mt-1 p-2 border rounded-md w-full focus:ring focus:ring-indigo-300"
-          >
-        </div>
-        <div>
-          <label for="email" class="block text-sm font-medium text-gray-700">Email:</label>
-          <input
-            type="email"
-            id="email"
-            v-model="collection.email"
-            required
-            class="mt-1 p-2 border rounded-md w-full focus:ring focus:ring-indigo-300"
-          >
-        </div>
-        <!-- Display the created_at attribute (if it exists) -->
-        <div v-if="collection.created_at">
-          <label class="block text-sm font-medium text-gray-700">Created At:</label>
-          <span>{{ collection.created_at }}</span>
-        </div>
-        <div>
-          <button
-            type="submit"
-            class="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 focus:outline-none focus:ring focus:ring-indigo-300"
-          >
-            Create Collection
-          </button>
-        </div>
-      </form>
-        <!-- Notification Modal -->
-      <div v-if="notification.show" class="fixed inset-0 flex items-center justify-center">
-        <div class="bg-white p-6 rounded-lg shadow-md">
-          <div
-            class="p-4 rounded-md flex flex-col items-center"
-            :class="notification.type === 'success' ? 'bg-green-500' : 'bg-red-500'"
-          >
-            <!-- Display larger icon at the top -->
-            <img
-              v-if="notification.type === 'success'"
-              src="@/assets/images/right.png"
-              alt="Success Icon"
-              class="w-16 h-16 mb-4"
-            />
-            <img
-              v-else
-              src="@/assets/images/wrong.png"
-              alt="Error Icon"
-              class="w-16 h-16 mb-4"
-            />
-            <span
-              class="text-lg"
-              :class="notification.type === 'success' ? 'text-white' : 'text-white'"
+    <div class="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/2"> <!-- Apply the same width classes -->
+      <div class="bg-white rounded-lg shadow-md p-4"> <!-- Card container -->
+        <h1 class="text-3xl font-bold mb-4">Create a Collection</h1>
+        <form @submit.prevent="createCollection" class="space-y-4">
+          <div>
+            <label for="name" class="block text-sm font-medium text-gray-700">Name:</label>
+            <input
+              type="text"
+              id="name"
+              v-model="collection.name"
+              required
+              class="mt-1 p-2 border rounded-md w-full focus:ring focus:ring-indigo-300"
             >
-              {{ notification.message }}
-            </span>
           </div>
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700">Email:</label>
+            <input
+              type="email"
+              id="email"
+              v-model="collection.email"
+              required
+              class="mt-1 p-2 border rounded-md w-full focus:ring focus:ring-indigo-300"
+            >
+          </div>
+          <!-- Display the created_at attribute (if it exists) -->
+          <div v-if="collection.created_at">
+            <label class="block text-sm font-medium text-gray-700">Created At:</label>
+            <span>{{ collection.created_at }}</span>
+          </div>
+          <div>
+            <button
+              type="submit"
+              class="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 focus:outline-none focus:ring focus:ring-indigo-300"
+            >
+              Create Collection
+            </button>
+          </div>
+        </form>
+      </div> <!-- End of card container -->
+      <!-- Notification Modal -->
+      <div
+        v-if="notification.show"
+        class="absolute right-4 bottom-4 bg-white p-2 rounded-md shadow-md w-64"
+      >
+        <div class="flex items-center space-x-2">
+          <!-- Logo -->
+          <img
+            v-if="notification.type === 'success'"
+            src="@/assets/images/right.png"
+            alt="Success Icon"
+            class="w-8 h-8"
+          />
+          <img
+            v-else
+            src="@/assets/images/wrong.png"
+            alt="Error Icon"
+            class="w-8 h-8"
+          />
+          <!-- Message -->
+          <span
+            class="text-base flex-grow font-bold"
+            :class="notification.type === 'success' ? 'text-green-500' : 'text-red-500'"
+          >
+            {{ notification.message }}
+          </span>
         </div>
       </div>
     </div>
   </div>
 </template>
+
+
 
 <script>
 import { ref } from 'vue';

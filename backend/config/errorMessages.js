@@ -16,6 +16,7 @@
  * @property {string} SUCCESSFULLY_CREATED - Successfully created.
  * @property {string} SUCCESSFULLY_UPDATED - Successfully updated.
  * @property {string} SUCCESSFULLY_DELETED - Successfully deleted.
+ * @property {string} NO_CONTENT - No content found.
  */
 
 module.exports = {
@@ -33,4 +34,6 @@ module.exports = {
   SUCCESSFULLY_CREATED: 'Successfully created.',
   SUCCESSFULLY_UPDATED: 'Successfully updated.',
   SUCCESSFULLY_DELETED: 'Successfully deleted.',
+  NO_CONTENT: 'No content found.',
 };
+
