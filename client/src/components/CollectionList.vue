@@ -37,7 +37,7 @@
                     <img src="@/assets/images/edit.png" alt="Edit Icon" class="w-4 h-4 cursor-pointer mr-2"
                       @click="editCollection(collection.id)" />
                     <img src="@/assets/images/delete.png" alt="Delete Icon" class="w-4 h-4 cursor-pointer mr-2"
-                      @click="deleteCollection(collection.id)" />
+                      @click="showDeleteConfirmationModal(collection.id)" /> <!-- Show the delete confirmation modal on click -->
                     <img src="@/assets/images/upload.png" alt="Upload Icon" class="w-4 h-4 cursor-pointer"
                       @click="uploadFile(collection.id)" />
                   </div>
@@ -45,6 +45,17 @@
               </tr>
             </tbody>
           </table>
+        </div>
+
+        <div v-if="showDeleteModal" class="fixed inset-0 flex items-center justify-center z-50">
+          <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h3 class="text-xl font-semibold mb-4">Confirm Deletion</h3>
+            <p class="mb-4">Are you sure you want to delete this collection?</p>
+            <div class="flex justify-end">
+              <button @click="cancelDeleteCollection" class="px-4 py-2 bg-gray-300 text-gray-600 rounded-md mr-2">Cancel</button>
+              <button @click="confirmDeleteCollection" class="px-4 py-2 bg-red-500 text-white rounded-md">Confirm</button>
+            </div>
+          </div>
         </div>
 
         <div v-if="showSuccessModal" class="fixed bottom-0 right-0 m-4 shadow-md">
@@ -77,7 +88,6 @@
                 {{ page }}
               </button>
             </div>
-
           </div>
         </div>
       </div>
@@ -103,8 +113,11 @@ export default {
       currentPage: 1,
       showSuccessModal: false,
       successMessage: '',
+      showDeleteModal: false,
+      collectionToDeleteId: null,
     };
   },
+
   computed: {
     filteredCollections() {
       const filterText = this.filter.toLowerCase();
@@ -136,9 +149,11 @@ export default {
       return this.filteredCollections.length;
     },
   },
+
   async mounted() {
     await this.fetchCollections();
   },
+
   methods: {
     async fetchCollections() {
       try {
@@ -149,14 +164,24 @@ export default {
       }
     },
 
+    showDeleteConfirmationModal(collectionId) {
+      this.collectionToDeleteId = collectionId;
+      this.showDeleteModal = true;
+    },
+
+    confirmDeleteCollection() {
+      if (this.collectionToDeleteId) {
+        this.deleteCollection(this.collectionToDeleteId);
+        this.showDeleteModal = false;
+      }
+    },
+
+    cancelDeleteCollection() {
+      this.showDeleteModal = false;
+    },
+
     async deleteCollection(collectionId) {
       try {
-        const confirmDeletion = window.confirm('Are you sure you want to delete this collection?');
-
-        if (!confirmDeletion) {
-          return;
-        }
-
         await api.deleteCollection(collectionId);
         const indexToDelete = this.collections.findIndex((collection) => collection.id === collectionId);
         if (indexToDelete !== -1) {
@@ -175,6 +200,7 @@ export default {
         console.error('Error deleting collection:', error);
       }
     },
+
     goToPage(page) {
       if (page >= 1 && page <= this.pageCount) {
         this.currentPage = page;
@@ -183,8 +209,9 @@ export default {
 
     editCollection(collectionId) {
       this.$router.push({ name: 'edit-collection', params: { id: collectionId } });
-    }
+    },
   },
+
   watch: {
     pageSize: {
       handler(newPageSize) {
