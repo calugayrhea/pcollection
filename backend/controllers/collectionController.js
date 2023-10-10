@@ -66,10 +66,6 @@ const collectionController = {
       const newName = req.body.name;
       const newEmail = req.body.email;
 
-      console.log('Collection ID:', collectionId);
-      console.log('New Name:', newName);
-      console.log('New Email:', newEmail);
-
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(HttpStatus.BAD_REQUEST).json({ errors: errors.array() });
@@ -77,29 +73,20 @@ const collectionController = {
 
       const collection = await Collection.getById(collectionId);
 
-      console.log('Collection:', collection);
-
       if (!collection) {
         return res.status(HttpStatus.NOT_FOUND).json({ error: ErrorMessages.COLLECTION_NOT_FOUND });
       }
 
-      console.log('Owner Email:', collection.owner_email);
 
       if (collection.owner_email !== newEmail) {
-        console.log('Authorization Failed');
         return res.status(HttpStatus.FORBIDDEN).json({ error: ErrorMessages.AUTHORIZATION_FAILED });
       }
 
       if (!newName) {
-        console.log('New Name is Empty');
         return res.status(HttpStatus.BAD_REQUEST).json({ error: ErrorMessages.NAME_REQUIRED });
       }
 
-      console.log('Before Updating Collection');
-
       await Collection.updateNameAndEmail(collectionId, newName, newEmail);
-
-      console.log('Collection Updated Successfully');
 
       res.status(HttpStatus.OK).json({ message: ErrorMessages.SUCCESSFULLY_UPDATED });
     } catch (error) {
@@ -118,9 +105,8 @@ const collectionController = {
         console.error('Collection not found');
         return res.status(HttpStatus.NOT_FOUND).json({ error: ErrorMessages.COLLECTION_NOT_FOUND });
       }
-  
       console.log('Collection deleted successfully');
-      res.status(HttpStatus.NO_CONTENT).send();
+      return res.status(HttpStatus.NO_CONTENT).json({ message: 'Collection deleted successfully' });
     } catch (error) {
       console.error('Error deleting collection:', error);
       res.status(HttpStatus.SERVER_ERROR).json({ error: ErrorMessages.SERVER_ERROR });
