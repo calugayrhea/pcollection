@@ -1,3 +1,5 @@
+/* eslint-env node */
+
 const request = require('supertest');
 const { app, startServer } = require('../server');
 const db = require('../config/database');

@@ -1,3 +1,5 @@
+/* eslint-env node */
+
 const Collection = require('../models/Collections');
 const { validationResult } = require('express-validator');
 const validator = require('validator');

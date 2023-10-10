@@ -1,5 +1,7 @@
+/* eslint-env node */
+
 const fs = require('fs');
-const path = require('path');
+// const path = require('path');
 const Collection = require('../models/Collections');
 const Photo = require('../models/Photo');
 const HttpStatus = require('../config/httpStatuscode');
