@@ -1,4 +1,5 @@
 // config/database.js
+/* eslint-env node */ 
 
 const mysql = require('mysql');
 

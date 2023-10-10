@@ -1,4 +1,5 @@
 // errorMessages.js
+/* eslint-env node */
 
 /**
  * @typedef {Object} ErrorMessage

@@ -1,4 +1,5 @@
 // config/env.js
+/* eslint-env node */
 
 require('dotenv').config();
 

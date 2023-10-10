@@ -1,4 +1,5 @@
 // httpStatusCodes.js
+/* eslint-env node */
 
 module.exports = {
     OK: 200,

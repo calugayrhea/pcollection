@@ -1,3 +1,4 @@
+/* eslint-env node */
 const multer = require('multer');
 
 const storage = multer.diskStorage({
