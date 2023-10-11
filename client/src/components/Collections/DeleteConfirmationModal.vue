@@ -30,6 +30,6 @@
   </script>
   
   <style scoped>
-  /* Add Tailwind CSS classes here if needed */
+  
   </style>
   

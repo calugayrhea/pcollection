@@ -22,7 +22,6 @@ const photoController = {
         uploadedPhotoCount++;
 
         if (uploadedPhotoCount + currentPhotoCount > 5) {
-          console.log('Exceeded maximum number of photos allowed.');
           return res.status(HttpStatus.BAD_REQUEST).json({ error: ErrorMessages.MAX_PHOTOS_EXCEEDED });
         }
       }
@@ -65,23 +64,19 @@ const photoController = {
       console.log('Photo:', photo);
 
       if (!photo) {
-        console.log('Photo not found');
         return res.status(HttpStatus.NOT_FOUND).json({ error: ErrorMessages.PHOTO_NOT_FOUND });
       }
 
       if (photo.collection_id !== parseInt(collectionId)) {
-        console.log('Mismatched collectionId');
         return res.status(HttpStatus.BAD_REQUEST).json({ error: ErrorMessages.MISMATCHED_COLLECTION_ID });
       }
 
       const collection = await Collection.getById(parseInt(collectionId));
       if (!collection) {
-        console.log('Collection not found');
         return res.status(HttpStatus.NOT_FOUND).json({ error: ErrorMessages.COLLECTION_NOT_FOUND });
       }
 
       if (collection.owner_email !== userEmail) {
-        console.log('Authorization Failed');
         return res.status(HttpStatus.FORBIDDEN).json({ error: ErrorMessages.AUTHORIZATION_FAILED });
       }
 

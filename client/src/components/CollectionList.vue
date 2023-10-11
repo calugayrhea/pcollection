@@ -37,7 +37,7 @@
                     <img src="@/assets/images/edit.png" alt="Edit Icon" class="w-4 h-4 cursor-pointer mr-2"
                       @click="editCollection(collection.id)" />
                     <img src="@/assets/images/delete.png" alt="Delete Icon" class="w-4 h-4 cursor-pointer mr-2"
-                      @click="showDeleteConfirmationModal(collection.id)" /> <!-- Show the delete confirmation modal on click -->
+                      @click="showDeleteConfirmationModal(collection.id)" />
                     <img src="@/assets/images/upload.png" alt="Upload Icon" class="w-4 h-4 cursor-pointer"
                       @click="uploadFile(collection.id)" />
                   </div>
@@ -170,7 +170,6 @@ export default {
       this.showDeleteModal = true;
     },
 
-    // Confirm the collection deletion
     confirmDeleteCollection() {
       if (this.collectionToDeleteId) {
         this.deleteCollection(this.collectionToDeleteId);
