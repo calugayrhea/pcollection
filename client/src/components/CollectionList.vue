@@ -94,8 +94,9 @@
     </div>
   </div>
 </template>
-
 <script>
+
+
 import { useRouter } from 'vue-router';
 import api from '@/plugins/api';
 import Header from '@/components/Header.vue';
@@ -113,8 +114,8 @@ export default {
       currentPage: 1,
       showSuccessModal: false,
       successMessage: '',
-      showDeleteModal: false,
-      collectionToDeleteId: null,
+      showDeleteModal: false, 
+      collectionToDeleteId: null, 
     };
   },
 
@@ -169,6 +170,7 @@ export default {
       this.showDeleteModal = true;
     },
 
+    // Confirm the collection deletion
     confirmDeleteCollection() {
       if (this.collectionToDeleteId) {
         this.deleteCollection(this.collectionToDeleteId);
@@ -210,6 +212,11 @@ export default {
     editCollection(collectionId) {
       this.$router.push({ name: 'edit-collection', params: { id: collectionId } });
     },
+
+    uploadFile(collectionId) {
+  this.$router.push({ name: 'photo-upload', params: { collectionId } });
+}
+
   },
 
   watch: {
