@@ -1,9 +1,9 @@
 <template>
   <div class="w-full">
     <Header />
-    <h2 class="text-3xl font-semibold mb-4">Your Collections</h2>
+  
 
-    <div class="flex flex-col items-center mb-4">
+    <div class="flex flex-col items-center mt-10">
       <div class="bg-white rounded-lg shadow-lg p-4 w-full lg:w-3/4 xl:w-3/4">
         <div class="relative">
           <img src="@/assets/images/search.png" alt="Search Icon"

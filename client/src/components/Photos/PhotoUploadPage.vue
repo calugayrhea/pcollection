@@ -1,29 +1,24 @@
-this is what i mean
-
-
 <template>
   <div class="photo-upload-page">
     <Header />
     <div class="bg-gray-100 p-4 rounded-lg mb-4 shadow-md">
       <div class="bg-white rounded-lg p-4">
         <div class="flex space-x-2 text-gray-600">
-        <router-link to="/" class="hover:text-indigo-600 transition">Home</router-link>
-        <span>&gt;</span>
-        <router-link :to="'/collection-list'" class="hover:text-indigo-600 transition">Collections</router-link>
-        <span>&gt;</span>
-        <span class="font-semibold">Upload Photos</span>
-      </div>
+          <router-link to="/" class="hover:text-indigo-600 transition">Home</router-link>
+          <span>&gt;</span>
+          <router-link :to="'/collection-list'" class="hover:text-indigo-600 transition">Collections</router-link>
+          <span>&gt;</span>
+          <span class="font-semibold">Upload Photos</span>
+        </div>
         <h2 class="text-3xl font-semibold mb-4">{{ collectionName }} - Collections Photo</h2>
 
         <form @submit.prevent="uploadPhotos" class="space-y-4">
           <div class="mb-4">
             <label for="photos" class="block font-semibold mb-2">Select Photos:</label>
-            <input type="file" id="photos" ref="photosInput" multiple accept="image/*" class="p-2 border rounded-md w-full"
-              @change="onFileChange" required />
+            <input type="file" id="photos" ref="photosInput" multiple accept="image/*"
+              class="p-2 border rounded-md w-full" @change="onFileChange" required />
             <small class="text-gray-500">Select one or more image files (JPG, PNG, etc.).</small>
           </div>
-
-          <!-- Selected Photos Section -->
           <div v-if="selectedPhotos.length > 0" class="mb-4">
             <h3 class="text-lg font-semibold mb-2">Selected Photos:</h3>
             <div class="flex flex-wrap">
@@ -42,10 +37,13 @@ this is what i mean
         </form>
 
         <div class="mx-auto mt-4">
-          <div class="w-1/3 px-4 pb-4">
-            <label for="photoSize" class="block font-semibold mb-2">Adjust Photo Size:</label>
-            <input type="range" id="photoSize" v-model="photoSizePercentage" min="10" max="200" step="10" class="w-full" />
-            <span class="text-sm">{{ photoSizePercentage }}%</span>
+          <div v-if="fetchedPhotos.length > 0">
+            <div class="w-1/3 px-4 pb-4">
+              <label for="photoSize" class="block font-semibold mb-2">Adjust Photo Size:</label>
+              <input type="range" id="photoSize" v-model="photoSizePercentage" min="10" max="200" step="10"
+                class="w-full" />
+              <span class="text-sm">{{ photoSizePercentage }}%</span>
+            </div>
           </div>
         </div>
 
@@ -54,7 +52,8 @@ this is what i mean
             <h3 class="text-lg font-semibold mb-2">Fetched Photos</h3>
             <div class="flex flex-wrap">
               <template v-for="photo in fetchedPhotos">
-                <img :src="photo.url" class="rounded-md ml-1" :style="{ width: photoSizePercentage + '%', height: 'auto' }" />
+                <img :src="photo.url" class="rounded-md ml-1 mb-3"
+                  :style="{ width: photoSizePercentage + '%', height: 'auto' }" />
               </template>
             </div>
           </div>
@@ -63,14 +62,14 @@ this is what i mean
     </div>
 
     <div v-if="showSuccessMessage || showErrorMessage" class="fixed inset-0 z-50 flex items-center justify-center">
-      <div class="rounded-lg shadow-md p-2 w-1/3">
-        <div v-if="showSuccessMessage" class="text-green-700 px-4 py-3 rounded-md" role="alert">
+      <div class="rounded-lg shadow-md p-2 flex flex-col"> 
+        <div v-if="showSuccessMessage" class="text-green-700 px-4 py-3 rounded-md overflow-auto" role="alert">
           <div class="flex items-center">
             <img src="@/assets/images/right.png" alt="Success Icon" class="w-6 h-6 mr-2" />
             <p class="font-semibold text-green-700">{{ successMessage }}</p>
           </div>
         </div>
-        <div v-if="showErrorMessage" class="text-red-700 px-4 py-3 rounded-md" role="alert">
+        <div v-if="showErrorMessage" class="text-red-700 px-4 py-3 rounded-md overflow-auto" role="alert">
           <div class="flex items-center">
             <img src="@/assets/images/wrong.png" alt="Error Icon" class="w-6 h-6 mr-2" />
             <p class="font-semibold text-red-700">{{ errorMessage }}</p>
@@ -80,7 +79,6 @@ this is what i mean
     </div>
   </div>
 </template>
-
 
 <script>
 import api from '@/plugins/api';
