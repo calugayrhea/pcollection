@@ -1,28 +1,18 @@
 <template>
   <div class="flex items-center justify-center h-screen">
     <div class="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/2">
-      <div class="bg-white rounded-lg shadow-md p-4">
-        <h1 class="text-3xl font-bold mb-4">Create a Collection</h1>
+      <div class="bg-white rounded-lg shadow-md p-4 font-roboto">
+        <h1 class="font-montserrat text-3xl font-bold mb-4">Create a Collection</h1>
         <form @submit.prevent="createCollection" class="space-y-4">
           <div>
             <label for="name" class="block text-sm font-medium text-gray-700">Name:</label>
-            <input
-              type="text"
-              id="name"
-              v-model="collection.name"
-              required
-              class="mt-1 p-2 border rounded-md w-full focus:ring focus:ring-indigo-300"
-            >
+            <input type="text" id="name" v-model="collection.name" required
+              class="mt-1 p-2 border rounded-md w-full focus:ring focus:ring-indigo-300">
           </div>
           <div>
             <label for="email" class="block text-sm font-medium text-gray-700">Email:</label>
-            <input
-              type="email"
-              id="email"
-              v-model="collection.email"
-              required
-              class="mt-1 p-2 border rounded-md w-full focus:ring focus:ring-indigo-300"
-            >
+            <input type="email" id="email" v-model="collection.email" required
+              class="mt-1 p-2 border rounded-md w-full focus:ring focus:ring-indigo-300">
           </div>
           <div v-if="collection.created_at">
             <label class="block text-sm font-medium text-gray-700">Created At:</label>
@@ -32,38 +22,24 @@
             <div v-if="loading" class="absolute inset-0 flex items-center justify-center bg-gray-300 opacity-75">
               <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-12 w-12"></div>
             </div>
-            <button
-              type="submit"
-              class="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 focus:outline-none focus:ring focus:ring-indigo-300"
-            >
+            <button type="submit"
+              class="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 focus:outline-none focus:ring focus:ring-indigo-300">
               Create Collection
             </button>
           </div>
         </form>
       </div>
-      <div
-        v-if="notification.show"
-        class="absolute right-4 bottom-4 bg-white p-2 rounded-md shadow-md w-64"
-      >
-        <div class="flex items-center space-x-2">
-          <img
-            v-if="notification.type === 'success'"
-            src="@/assets/images/right.png"
-            alt="Success Icon"
-            class="w-8 h-8"
-          />
-          <img
-            v-else
-            src="@/assets/images/wrong.png"
-            alt="Error Icon"
-            class="w-8 h-8"
-          />
-          <span
-            class="text-base flex-grow font-bold"
-            :class="notification.type === 'success' ? 'text-green-500' : 'text-red-500'"
-          >
-            {{ notification.message }}
-          </span>
+      <div v-if="notification.show" class="fixed inset-0 flex justify-center items-center z-50">
+        <div class="bg-white p-2 rounded-md shadow-md w-64">
+          <div class="flex items-center space-x-2">
+            <img v-if="notification.type === 'success'" src="@/assets/images/right.png" alt="Success Icon"
+              class="w-8 h-8" />
+            <img v-else src="@/assets/images/wrong.png" alt="Error Icon" class="w-8 h-8 text-red-500" />
+            <span class="text-base flex-grow font-bold"
+              :class="notification.type === 'success' ? 'text-green-500' : 'text-red-500'">
+              {{ notification.message }}
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -90,7 +66,7 @@ export default {
 
     const createCollection = async () => {
       try {
-        loading.value = true; 
+        loading.value = true;
 
         const response = await api.createCollection(collection.value);
 
@@ -104,7 +80,7 @@ export default {
         collection.value.email = '';
 
         setTimeout(() => {
-          loading.value = false; 
+          loading.value = false;
           notification.value = {
             message: response.message,
             type: 'success',
@@ -115,7 +91,7 @@ export default {
             router.push({ name: 'collection-list' });
           }, 1000);
 
-        }, 2000); 
+        }, 2000);
 
       } catch (error) {
         console.log('Error response:', error.response.data);
@@ -129,7 +105,7 @@ export default {
             show: true,
           };
         } else {
-          loading.value = false; 
+          loading.value = false;
           notification.value = {
             message: 'An error occurred while creating the collection.',
             type: 'error',
