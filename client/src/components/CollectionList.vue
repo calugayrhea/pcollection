@@ -23,7 +23,7 @@
             </thead>
 
             <tbody>
-              <tr v-for="collection in displayedCollections" :key="collection.id" class="border-b border-gray-300">
+              <tr v-for="collection in displayedCollections" :key="collection.id" class="border-b border-gray-300 hover:bg-gray-50 transition">
                 <td class="p-3">
                   <div class="flex items-center">
                     <img src="@/assets/images/folder.png" alt="Folder Icon" class="w-6 h-6 mr-2" />
@@ -31,16 +31,14 @@
                   </div>
                 </td>
                 <td class="p-3">{{ collection.owner_email }}</td>
-                <td class="p-3">{{ collection.created_at || 'N/A' }}</td>
-                <td class="p-3 flex justify-between">
-                  <div class="flex items-center">
-                    <img src="@/assets/images/edit.png" alt="Edit Icon" class="w-4 h-4 cursor-pointer mr-2"
-                      @click="editCollection(collection.id)" />
-                    <img src="@/assets/images/delete.png" alt="Delete Icon" class="w-4 h-4 cursor-pointer mr-2"
-                      @click="showDeleteConfirmationModal(collection.id)" />
-                    <img src="@/assets/images/upload.png" alt="Upload Icon" class="w-4 h-4 cursor-pointer"
-                      @click="uploadFile(collection.id)" />
-                  </div>
+                <td class="p-3">{{ formatCreationDate(collection.created_at) }}</td>
+                <td class="p-3 flex items-center space-x-2">
+                  <img src="@/assets/images/edit.png" alt="Edit Icon" class="w-6 h-6 cursor-pointer"
+                    @click="editCollection(collection.id)" />
+                  <img src="@/assets/images/delete.png" alt="Delete Icon" class="w-6 h-6 cursor-pointer"
+                    @click="showDeleteConfirmationModal(collection.id)" />
+                  <img src="@/assets/images/upload.png" alt="Upload Icon" class="w-6 h-6 cursor-pointer"
+                    @click="uploadFile(collection.id)" />
                 </td>
               </tr>
             </tbody>
@@ -100,6 +98,7 @@
 import { useRouter } from 'vue-router';
 import api from '@/plugins/api';
 import Header from '@/components/Header.vue';
+import { formatDistanceToNow } from 'date-fns';
 
 export default {
   components: {
@@ -163,6 +162,13 @@ export default {
       } catch (error) {
         console.error('Error fetching collections:', error);
       }
+    },
+    formatCreationDate(date) {
+      const createdDate = new Date(date);
+      const currentDate = new Date();
+      const timeAgo = formatDistanceToNow(createdDate, { addSuffix: true });
+
+      return timeAgo;
     },
 
     showDeleteConfirmationModal(collectionId) {
