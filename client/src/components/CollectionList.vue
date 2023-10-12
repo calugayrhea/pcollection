@@ -1,9 +1,9 @@
 <template>
   <div class="w-full">
     <Header />
-    <h2 class="text-3xl font-semibold mb-4">Your Collections</h2>
+  
 
-    <div class="flex flex-col items-center mb-4">
+    <div class="flex flex-col items-center mt-10">
       <div class="bg-white rounded-lg shadow-lg p-4 w-full lg:w-3/4 xl:w-3/4">
         <div class="relative">
           <img src="@/assets/images/search.png" alt="Search Icon"
@@ -23,7 +23,7 @@
             </thead>
 
             <tbody>
-              <tr v-for="collection in displayedCollections" :key="collection.id" class="border-b border-gray-300">
+              <tr v-for="collection in displayedCollections" :key="collection.id" class="border-b border-gray-300 hover:bg-gray-50 transition">
                 <td class="p-3">
                   <div class="flex items-center">
                     <img src="@/assets/images/folder.png" alt="Folder Icon" class="w-6 h-6 mr-2" />
@@ -31,16 +31,14 @@
                   </div>
                 </td>
                 <td class="p-3">{{ collection.owner_email }}</td>
-                <td class="p-3">{{ collection.created_at || 'N/A' }}</td>
-                <td class="p-3 flex justify-between">
-                  <div class="flex items-center">
-                    <img src="@/assets/images/edit.png" alt="Edit Icon" class="w-4 h-4 cursor-pointer mr-2"
-                      @click="editCollection(collection.id)" />
-                    <img src="@/assets/images/delete.png" alt="Delete Icon" class="w-4 h-4 cursor-pointer mr-2"
-                      @click="showDeleteConfirmationModal(collection.id)" /> <!-- Show the delete confirmation modal on click -->
-                    <img src="@/assets/images/upload.png" alt="Upload Icon" class="w-4 h-4 cursor-pointer"
-                      @click="uploadFile(collection.id)" />
-                  </div>
+                <td class="p-3">{{ formatCreationDate(collection.created_at) }}</td>
+                <td class="p-3 flex items-center space-x-2">
+                  <img src="@/assets/images/edit.png" alt="Edit Icon" class="w-6 h-6 cursor-pointer"
+                    @click="editCollection(collection.id)" />
+                  <img src="@/assets/images/delete.png" alt="Delete Icon" class="w-6 h-6 cursor-pointer"
+                    @click="showDeleteConfirmationModal(collection.id)" />
+                  <img src="@/assets/images/upload.png" alt="Upload Icon" class="w-6 h-6 cursor-pointer"
+                    @click="uploadFile(collection.id)" />
                 </td>
               </tr>
             </tbody>
@@ -94,11 +92,13 @@
     </div>
   </div>
 </template>
-
 <script>
+
+
 import { useRouter } from 'vue-router';
 import api from '@/plugins/api';
 import Header from '@/components/Header.vue';
+import { formatDistanceToNow } from 'date-fns';
 
 export default {
   components: {
@@ -113,8 +113,8 @@ export default {
       currentPage: 1,
       showSuccessModal: false,
       successMessage: '',
-      showDeleteModal: false,
-      collectionToDeleteId: null,
+      showDeleteModal: false, 
+      collectionToDeleteId: null, 
     };
   },
 
@@ -163,6 +163,13 @@ export default {
         console.error('Error fetching collections:', error);
       }
     },
+    formatCreationDate(date) {
+      const createdDate = new Date(date);
+      const currentDate = new Date();
+      const timeAgo = formatDistanceToNow(createdDate, { addSuffix: true });
+
+      return timeAgo;
+    },
 
     showDeleteConfirmationModal(collectionId) {
       this.collectionToDeleteId = collectionId;
@@ -210,6 +217,11 @@ export default {
     editCollection(collectionId) {
       this.$router.push({ name: 'edit-collection', params: { id: collectionId } });
     },
+
+    uploadFile(collectionId) {
+  this.$router.push({ name: 'photo-upload', params: { collectionId } });
+}
+
   },
 
   watch: {

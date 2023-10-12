@@ -31,4 +31,16 @@ export default {
   async deleteCollection(collectionId) {
     return apiCall('delete', `${API_BASE_URL}/collections/${collectionId}`);
   },
+
+  async uploadPhotos(collectionId, formData) {
+    return apiCall('post', `${API_BASE_URL}/collections/${collectionId}/photos`, formData);
+  },
+
+  async getAllPhotosByCollectionId(collectionId) {
+    return apiCall('get', `${API_BASE_URL}/collections/${collectionId}/photos`);
+  },
+
+  async deletePhoto(collectionId, photoId, email) {
+    return apiCall('delete', `${API_BASE_URL}/collections/${collectionId}/photos/${photoId}`, { email });
+  },
 };
